@@ -1,0 +1,42 @@
+[GC pause (G1 Humongous Allocation) (young) (initial-mark), 0.0014456 secs]
+   [Parallel Time: 0.6 ms, GC Workers: 8]
+      [GC Worker Start (ms): Min: 82.9, Avg: 83.0, Max: 83.1, Diff: 0.1]
+      [Ext Root Scanning (ms): Min: 0.2, Avg: 0.3, Max: 0.4, Diff: 0.2, Sum: 2.0]
+      [Update RS (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.0]
+         [Processed Buffers: Min: 0, Avg: 0.0, Max: 0, Diff: 0, Sum: 0]
+      [Scan RS (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.0]
+      [Code Root Scanning (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.0]
+      [Object Copy (ms): Min: 0.2, Avg: 0.2, Max: 0.3, Diff: 0.1, Sum: 1.5]
+      [Termination (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.0]
+         [Termination Attempts: Min: 1, Avg: 3.2, Max: 6, Diff: 5, Sum: 26]
+      [GC Worker Other (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.1]
+      [GC Worker Total (ms): Min: 0.4, Avg: 0.5, Max: 0.5, Diff: 0.1, Sum: 3.7]
+      [GC Worker End (ms): Min: 83.5, Avg: 83.5, Max: 83.5, Diff: 0.0]
+   [Code Root Fixup: 0.0 ms]
+   [Code Root Purge: 0.0 ms]
+   [Clear CT: 0.1 ms]
+   [Other: 0.8 ms]
+      [Choose CSet: 0.0 ms]
+      [Ref Proc: 0.7 ms]
+      [Ref Enq: 0.0 ms]
+      [Redirty Cards: 0.1 ms]
+      [Humongous Register: 0.0 ms]
+      [Humongous Reclaim: 0.0 ms]
+      [Free CSet: 0.0 ms]
+   [Eden: 1024.0K(6144.0K)->0.0B(2048.0K) Survivors: 0.0B->1024.0K Heap: 2670.7K(10.0M)->2480.1K(10.0M)]
+ [Times: user=0.00 sys=0.00, real=0.00 secs]
+[GC concurrent-root-region-scan-start]
+[GC concurrent-root-region-scan-end, 0.0004034 secs]
+[GC concurrent-mark-start]
+[GC concurrent-mark-end, 0.0000266 secs]
+[GC remark [Finalize Marking, 0.0012734 secs] [GC ref-proc, 0.0000573 secs] [Unloading, 0.0006954 secs], 0.0021665 secs]
+ [Times: user=0.01 sys=0.00, real=0.01 secs]
+[GC cleanup 4528K->4528K(10M), 0.0005138 secs]
+
+分析：
+   1.initial-mark：初始化标记，暂停全局，耗时：1.4毫秒
+     Eden被清空并复制到Survivors区,堆空间减少：200KB
+   2.root-region-scan:根区域扫描，并发执行不停顿。耗时：0.4MS
+   3.concurrent-mark:并发标记，不停顿。耗时：0.2MS
+   4.remark:重新标记，停顿全局，耗时:1.2MS.
+   5.cleanup:并发清理，不停顿，耗时:0.5MS,未清理调堆空间，堆使用4.5MB，下次GC后将发生OOM堆溢出。
