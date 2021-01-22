@@ -1,0 +1,24 @@
+1.串行: -XX:+UseSerialGC     -XX:PrintGCDetails
+  java -Xmx512m -Xms512 -XX:+UseSerialGC -XX:+PrintGCDetails
+  A. 只发生YoungGC,只在新生代反复被GC。GC过程比较稳定，堆空间控制在比较稳定程度。如果在单应用的场景，串行GC比较合适。
+  B. Old区并没有被使用
+
+2.并行: -XX:+UseParallelGC
+  java -Xmx512m -Xms512m -XX:+UseParallelGC -XX:+PrintGCDetails
+  A. 开始阶段执行YoungGC,执行一段时间开始执行FullGC,FullGC和YoungGC间隔时间越来越少
+  B. YoungGC的GC过程，年轻代空间没有太大幅度变化，很多无法GC对象被提到老年代
+  C. FullGC需要暂定应用，影响系统性能，创建对象比串行低，因为是单一对象生成，还是串行GC比较适合.
+
+3.CMS: -XX:+UseConcMarkSweepGC
+  java -Xmx512m -Xms512m -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails
+  A. 在执行YoungGC时，可进行CMS的并发标记和并发清除
+  B. Young区使用比例比较小，CMS快速标记和并发清除提升了堆的使用率，产生的对象相对较多。
+
+4.G1:-XX:+UseG2GC
+  java -Xmx512m -Xms512m -XX:+UseG1GC -XX:+PrintGCDetails
+  GC部分日志:
+  [Eden: 24.0M(24.0M)->0.0B(21.0M) Survivors: 1024.0K->4096.0K Heap: 402.1M(512.0M)->376.9M(512.0M)]
+  [Eden: 21.0M(21.0M)->0.0B(27.0M) Survivors: 4096.0K->4096.0K Heap: 402.7M(512.0M)->367.5M(512.0M)]
+  A. 标记和清除标记效率非常高。
+  B. 堆空间始终在稳定状态，由于最大堆空间不大，G1性能不能充分体现.
+

@@ -1,0 +1,127 @@
+1.并行: -XX:+UseParallelGC
+  java -Xmx1g -Xms1g -XX:+UseParallelGC -XX:+PrintGCDetails
+  日志====================================================================================================================:
+  [GC (Allocation Failure) [PSYoungGen: 262144K->9131K(305664K)] 262144K->9147K(1005056K), 0.0065753 secs] [Times: user=0.02 sys=0.01, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 271275K->6336K(305664K)] 271291K->6360K(1005056K), 0.0048019 secs] [Times: user=0.02 sys=0.01, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 268480K->6288K(305664K)] 268504K->6320K(1005056K), 0.0027801 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 268432K->6384K(305664K)] 268464K->6424K(1005056K), 0.0028225 secs] [Times: user=0.01 sys=0.01, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 268528K->6400K(305664K)] 268568K->6448K(1005056K), 0.0029723 secs] [Times: user=0.02 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 268544K->6304K(339968K)] 268592K->6360K(1039360K), 0.0048388 secs] [Times: user=0.01 sys=0.01, real=0.01 secs]
+  [GC (Allocation Failure) [PSYoungGen: 337056K->224K(331264K)] 337112K->6901K(1030656K), 0.0041336 secs] [Times: user=0.02 sys=0.01, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 330976K->160K(337920K)] 337653K->6861K(1037312K), 0.0006785 secs] [Times: user=0.00 sys=0.01, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 327840K->160K(328192K)] 334541K->6861K(1027584K), 0.0007123 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 327840K->224K(337920K)] 334541K->6965K(1037312K), 0.0007042 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 326880K->128K(337920K)] 333621K->6869K(1037312K), 0.0007196 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [PSYoungGen: 326784K->160K(337920K)] 333525K->6901K(1037312K), 0.0006924 secs] [Times: user=0.00 sys=0.00, real=0.01 secs]
+  [GC (Allocation Failure) [PSYoungGen: 326816K->192K(337920K)] 333557K->6933K(1037312K), 0.0007202 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+  压测结果====================================================================================================================:
+  ZBMAC-C02WD3KWD:JavaCourseCodes$ wrk -t10 -c40 -d30s --latency http://127.0.0.1:8808/test
+  Running 30s test @ http://127.0.0.1:8808/test
+    10 threads and 40 connections
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+      Latency   606.49us    0.99ms  68.68ms   98.95%
+      Req/Sec     7.01k     0.93k    8.81k    85.68%
+    Latency Distribution
+       50%  533.00us
+       75%  582.00us
+       90%  673.00us
+       99%    1.63ms
+    2098658 requests in 30.10s, 218.16MB read
+  Requests/sec:  69723.84
+  Transfer/sec:      7.25MB
+
+  分析====================================================================================================================：
+  平均延迟较低，延迟分布均匀，1G堆内存并行GC，性能较好
+
+
+2.CMS: -XX:+UseConcMarkSweepGC
+  java -Xmx1g -Xms1g -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails
+
+  GC日志====================================================================================================================:
+  [GC (Allocation Failure) [ParNew: 288345K->9447K(314560K), 0.0039829 secs] 288345K->9447K(1013632K), 0.0040130 secs] [Times: user=0.02 sys=0.00, real=0.01 secs]
+  [GC (Allocation Failure) [ParNew: 289063K->10364K(314560K), 0.0066638 secs] 289063K->10364K(1013632K), 0.0067131 secs] [Times: user=0.04 sys=0.00, real=0.01 secs]
+  [GC (Allocation Failure) [ParNew: 289980K->8007K(314560K), 0.0030159 secs] 289980K->8007K(1013632K), 0.0030495 secs] [Times: user=0.02 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [ParNew: 287623K->9652K(314560K), 0.0031842 secs] 287623K->9652K(1013632K), 0.0032178 secs] [Times: user=0.02 sys=0.00, real=0.01 secs]
+  [GC (Allocation Failure) [ParNew: 289268K->11161K(314560K), 0.0032450 secs] 289268K->11161K(1013632K), 0.0032907 secs] [Times: user=0.02 sys=0.00, real=0.01 secs]
+  [GC (Allocation Failure) [ParNew: 290777K->3304K(314560K), 0.0202194 secs] 290777K->9707K(1013632K), 0.0202568 secs] [Times: user=0.05 sys=0.02, real=0.02 secs]
+  [GC (Allocation Failure) [ParNew: 282920K->944K(314560K), 0.0022946 secs] 289323K->7348K(1013632K), 0.0023260 secs] [Times: user=0.01 sys=0.00, real=0.01 secs]
+  [GC (Allocation Failure) [ParNew: 280560K->207K(314560K), 0.0022370 secs] 286964K->6611K(1013632K), 0.0022668 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [ParNew: 279823K->59K(314560K), 0.0022469 secs] 286227K->6464K(1013632K), 0.0022873 secs] [Times: user=0.02 sys=0.00, real=0.01 secs]
+  [GC (Allocation Failure) [ParNew: 279675K->16K(314560K), 0.0022038 secs] 286080K->6420K(1013632K), 0.0022301 secs] [Times: user=0.02 sys=0.00, real=0.00 secs]
+  [GC (Allocation Failure) [ParNew: 279632K->16K(314560K), 0.0022659 secs] 286036K->6420K(1013632K), 0.0023030 secs] [Times: user=0.02 sys=0.00, real=0.00 secs]
+
+  压测结果====================================================================================================================:
+  Running 30s test @ http://127.0.0.1:8808/test
+    10 threads and 40 connections
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+      Latency     1.72ms   10.24ms 195.80ms   98.24%
+      Req/Sec     6.79k     1.24k   18.69k    91.25%
+    Latency Distribution
+       50%  543.00us
+       75%  615.00us
+       90%  702.00us
+       99%   40.58ms
+    2021469 requests in 30.10s, 210.13MB read
+  Requests/sec:  67155.06
+  Transfer/sec:      6.98MB
+
+  分析：====================================================================================================================
+     平均延迟比并行GC高，延迟分布有波动，性能稍差
+
+
+3.G1:-XX:+UseG2GC
+  java -Xmx1g -Xms1g -XX:+UseG1GC -XX:+PrintGCDetails
+
+  GC日志====================================================================================================================：
+  [GC pause (G1 Evacuation Pause) (young), 0.0013166 secs]
+     [Parallel Time: 0.6 ms, GC Workers: 8]
+        [GC Worker Start (ms): Min: 38432.3, Avg: 38432.4, Max: 38432.4, Diff: 0.1]
+        [Ext Root Scanning (ms): Min: 0.2, Avg: 0.2, Max: 0.2, Diff: 0.1, Sum: 1.6]
+        [Update RS (ms): Min: 0.0, Avg: 0.0, Max: 0.1, Diff: 0.0, Sum: 0.4]
+           [Processed Buffers: Min: 2, Avg: 3.0, Max: 4, Diff: 2, Sum: 24]
+        [Scan RS (ms): Min: 0.1, Avg: 0.1, Max: 0.1, Diff: 0.0, Sum: 0.6]
+        [Code Root Scanning (ms): Min: 0.0, Avg: 0.0, Max: 0.1, Diff: 0.1, Sum: 0.2]
+        [Object Copy (ms): Min: 0.0, Avg: 0.0, Max: 0.0, Diff: 0.0, Sum: 0.1]
+        [Termination (ms): Min: 0.0, Avg: 0.1, Max: 0.1, Diff: 0.1, Sum: 0.7]
+           [Termination Attempts: Min: 1, Avg: 1.0, Max: 1, Diff: 0, Sum: 8]
+        [GC Worker Other (ms): Min: 0.0, Avg: 0.0, Max: 0.1, Diff: 0.0, Sum: 0.3]
+        [GC Worker Total (ms): Min: 0.5, Avg: 0.5, Max: 0.5, Diff: 0.1, Sum: 4.0]
+        [GC Worker End (ms): Min: 38432.8, Avg: 38432.9, Max: 38432.9, Diff: 0.1]
+     [Code Root Fixup: 0.0 ms]
+     [Code Root Purge: 0.0 ms]
+     [Clear CT: 0.2 ms]
+     [Other: 0.6 ms]
+        [Choose CSet: 0.0 ms]
+        [Ref Proc: 0.1 ms]
+        [Ref Enq: 0.0 ms]
+        [Redirty Cards: 0.2 ms]
+        [Humongous Register: 0.0 ms]
+        [Humongous Reclaim: 0.0 ms]
+        [Free CSet: 0.1 ms]
+     [Eden: 613.0M(613.0M)->0.0B(613.0M) Survivors: 1024.0K->1024.0K Heap: 621.4M(1024.0M)->8602.0K(1024.0M)]
+   [Times: user=0.01 sys=0.00, real=0.00 secs]
+
+   压测结果====================================================================================================================:
+   Running 30s test @ http://127.0.0.1:8808/test
+     10 threads and 40 connections
+     Thread Stats   Avg      Stdev     Max   +/- Stdev
+       Latency     2.15ms   12.25ms 202.84ms   97.94%
+       Req/Sec     6.88k     2.13k   40.58k    83.66%
+     Latency Distribution
+        50%  499.00us
+        75%  595.00us
+        90%    1.00ms
+        99%   65.19ms
+     2049186 requests in 30.10s, 213.01MB read
+   Requests/sec:  68068.57
+   Transfer/sec:      7.08MB
+
+   分析====================================================================================================================：
+      平均延迟更高，延迟分布波动更大，处理请求性能也相对差了些
+
+   总体分析====================================================================================================================:
+      接收网络请求时，不同GC方式的GC频率不大，只响应字符串没有太多对象以及大对象产生，所以平行GC性能要好一些。网络的处理请求难分伯仲，分析都在Young区，而且没有复杂系统逻辑。
+      G1在请求开始时GC频率较高，5S后频率趋于稳定，分析应该是Netty在分配队列到一定极限还是有排队等候情况，所以也不能完全说明G1性能差，还是场景简单更加适合并行GC。
+
+
