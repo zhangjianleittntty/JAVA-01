@@ -1,20 +1,18 @@
-package com.java.week9.rpccore.client.nettyclient.client;
-/*
- * @author uv
- * @date 2018/10/12 20:54
- *
- */
+package com.java.week9.rpccore.client.nettyclient.client.client;
 
-import com.java.week9.rpccore.api.netty.RpcNettyDecoder;
-import com.java.week9.rpccore.api.netty.RpcNettyEncoder;
-import com.java.week9.rpccore.api.netty.RpcNettyRequset;
-import com.java.week9.rpccore.api.netty.RpcNettyResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 
+/**
+ * Netty Client Test: 对应server包下的内容
+ * @author zhangjl
+ * @date 2021-3
+ * Netty客户端连接服务器的事例
+ */
 public class NettyClient {
 
     private final String host;
@@ -39,8 +37,8 @@ public class NettyClient {
                         public void initChannel(SocketChannel ch) throws Exception {
                             System.out.println("正在连接中...");
                             ChannelPipeline pipeline = ch.pipeline();
-//                            pipeline.addLast(new RpcNettyEncoder(RpcNettyRequset.class)); //编码request
-//                            pipeline.addLast(new RpcNettyDecoder(RpcNettyResponse.class)); //解码response
+                            //pipeline.addLast(new HttpClientCodec());
+                            pipeline.addLast(new HttpObjectAggregator(1 * 1024));
                             pipeline.addLast(new ClientHandlerChannelInbound()); //客户端处理类
 
                         }
@@ -48,23 +46,8 @@ public class NettyClient {
             //发起异步连接请求，绑定连接端口和host信息
             final ChannelFuture future = b.connect(host, port).sync();
 
-//            future.addListener(new ChannelFutureListener() {
-//
-//                @Override
-//                public void operationComplete(ChannelFuture arg0) throws Exception {
-//                    if (future.isSuccess()) {
-//                        System.out.println("连接服务器成功");
-//
-//                    } else {
-//                        System.out.println("连接服务器失败");
-//                        future.cause().printStackTrace();
-//                        group.shutdownGracefully(); //关闭线程组
-//                    }
-//                }
-//            });
-            Thread.sleep(3000);
             this.channel = future.channel();
-            //channel.closeFuture().sync();
+            channel.closeFuture().sync();
         } finally {
             group.shutdownGracefully();
         }
@@ -72,5 +55,10 @@ public class NettyClient {
 
     public Channel getChannel() {
         return channel;
+    }
+
+    public static void main(String[] args) throws Exception {
+        NettyClient nettyClient = new NettyClient("127.0.0.1",8085);
+        nettyClient.start();
     }
 }

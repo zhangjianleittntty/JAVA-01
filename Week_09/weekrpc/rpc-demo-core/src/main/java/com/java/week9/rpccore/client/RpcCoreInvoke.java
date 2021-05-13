@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 public class RpcCoreInvoke {
     public static <T> T buildProxy(Class<T> classModule,String url) {
-        return (T) Proxy.newProxyInstance(classModule.getClass().getClassLoader(),classModule.getClass().getInterfaces(),new RouteClassHandler(classModule,url));
+        return (T) Proxy.newProxyInstance(RpcCoreInvoke.class.getClassLoader(),new Class[]{classModule},new RouteClassHandler(classModule,url));
     }
 
     private static final class RouteClassHandler implements InvocationHandler {
@@ -46,19 +46,19 @@ public class RpcCoreInvoke {
         }
 
         private Object post(RpcRequest request, String url) throws Exception {
-            NettyClient nettyClient = new NettyClient(url,8081);
+            NettyClient nettyClient = new NettyClient(url,8085);
             // 启动Netty服务
             nettyClient.start();
             // 获取Netty Channel
-            Channel channel = nettyClient.getChannel();
-            // 消息体
-            RpcNettyRequset rpcNettyRequset = new RpcNettyRequset();
-            rpcNettyRequset.setId(UUID.randomUUID().toString());
-            rpcNettyRequset.setData(JSON.toJSON(request));
-            // 通过channel发送消息
-            channel.writeAndFlush(rpcNettyRequset);
+            //Channel channel = nettyClient.getChannel();
+//            // 消息体
+//            RpcNettyRequset rpcNettyRequset = new RpcNettyRequset();
+//            rpcNettyRequset.setId(UUID.randomUUID().toString());
+//            rpcNettyRequset.setData(JSON.toJSON(request));
+//            // 通过channel发送消息
+//            channel.writeAndFlush(rpcNettyRequset);
 
-            return nettyClient.getClientHandler().getRpcResponse();
+            return null;
         }
 
     }

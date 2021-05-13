@@ -6,24 +6,47 @@ package com.java.week9.rpccore.client.nettyclient.client;
  */
 
 import com.java.week9.rpccore.api.netty.RpcNettyResponse;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 
 import java.net.URI;
 
-public class ClientHandler extends SimpleChannelInboundHandler<RpcNettyResponse> {
+public class ClientHandlerChannelInbound extends ChannelInboundHandlerAdapter {
 
-    //处理服务端返回的数据
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcNettyResponse response) throws Exception {
-        System.out.println("接受到server响应数据: " + response.toString());
+    private ByteBuf buf;
+
+    public ClientHandlerChannelInbound() {
+        String r = "first request";
+        byte[] req = r.getBytes();
+        buf = Unpooled.buffer(req.length);
+        buf.writeBytes(req);
+        System.out.println("send request:" + r);
     }
 
+    /**
+     * Read Service Info
+     * @param ctx
+     * @param msg
+     * @throws Exception
+     */
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("channelRead:" + msg.toString());
+        ctx.close();
+    }
+
+    /**
+     * Action Info
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         //super.channelActive(ctx);
+        // FullHttpRequset
 //        URI uri = new URI("/");
 //        FullHttpRequest requestToSQLMAPAPI = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET,
 //                //uri.toASCIIString(), Unpooled.wrappedBuffer(ctx.getBytes("UTF-8")));
@@ -34,9 +57,19 @@ public class ClientHandler extends SimpleChannelInboundHandler<RpcNettyResponse>
 //        requestToSQLMAPAPI.headers().set(HttpHeaders.Names.CONTENT_LENGTH,
 //                requestToSQLMAPAPI.content().readableBytes());
 //        requestToSQLMAPAPI.headers().set(HttpHeaders.Names.CONTENT_TYPE, "application/json");
-        ctx.writeAndFlush(null);
+
+
+
+        ctx.writeAndFlush(buf);
+        //ctx.writeAndFlush(requestToSQLMAPAPI).sync();
     }
 
+    /**
+     * ctx Close
+     * @param ctx
+     * @param cause
+     * @throws Exception
+     */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.close();

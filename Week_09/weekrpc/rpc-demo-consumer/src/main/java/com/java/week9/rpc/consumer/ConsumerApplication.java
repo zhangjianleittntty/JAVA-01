@@ -17,7 +17,7 @@ public class ConsumerApplication {
     public static void main(String[] args) {
         OrderService orderService = RpcCoreInvoke.buildProxy(OrderService.class,"127.0.0.1");
         Order order = orderService.getOrder(1);
-        System.out.println(JSON.toJSON(order));
+        //System.out.println(JSON.toJSON(order));
     }
 
 }

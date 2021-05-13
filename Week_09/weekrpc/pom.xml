@@ -24,6 +24,8 @@
 		<java.version>1.8</java.version>
         <version.lombok>1.18.0</version.lombok>
 		<version.fastjson>1.2.70</version.fastjson>
+		<version.gson>2.8.5</version.gson>
+		<version.guava>19.0</version.guava>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -67,6 +69,20 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- JSON -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${version.gson}</version>
+		</dependency>
+        <!-- GuavaCache -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${version.guava}</version>
+		</dependency>
+
 	</dependencies>
 
 
