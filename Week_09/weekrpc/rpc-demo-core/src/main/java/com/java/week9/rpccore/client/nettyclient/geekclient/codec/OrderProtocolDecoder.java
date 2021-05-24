@@ -1,5 +1,6 @@
 package com.java.week9.rpccore.client.nettyclient.geekclient.codec;
 
+import com.java.week9.rpccore.api.geekcommon.JsonUtil;
 import com.java.week9.rpccore.api.geekcommon.RequestMessage;
 import com.java.week9.rpccore.api.geekcommon.ResponseMessage;
 import io.netty.buffer.ByteBuf;
@@ -16,10 +17,11 @@ import java.util.List;
  */
 public class OrderProtocolDecoder extends MessageToMessageDecoder<ByteBuf> {
 
+
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf msg, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
         ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.decode(msg);
+        responseMessage.decode(byteBuf);
         out.add(responseMessage);
     }
 }

@@ -1,14 +1,19 @@
 package com.java.week9.rpccore.api.geekcommon.order;
 
 import com.java.week9.rpccore.api.geekcommon.Operation;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Slf4j
+@AllArgsConstructor
 public class OrderOperation extends Operation {
     private int tableId;
     private String fish;
+
+    public OrderOperation() {
+    }
 
     /**
      * 模拟下单并返回下单结果

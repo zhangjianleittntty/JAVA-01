@@ -1,4 +1,4 @@
-1.Netty示例: Netty Client请求Netty Server,Netty Server响应消息
+1.Netty示例: Netty Client请求Netty Server,Netty Server响应消息<br>
   rpc-demo-core:
      /---> client
         /--> nettyclient
@@ -6,6 +6,8 @@
      /---> server
         /--> nettyserver
             /--> server
+  (1) IdleStateHandler.java
+      
 
 
 

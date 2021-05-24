@@ -26,6 +26,30 @@ import io.netty.channel.SimpleChannelInboundHandler;
  *           (5) 将RequestMessage传递过来的MessageHandler也放到RespsonseMessage
  *           (6) Netty的服务端输出到客户端
  *
+ *      模拟内存泄露:
+ *        1. 定义一个ByteBuf，不释放
+ *        2. 客户端大量大发送请求消息
+ *      标记注释:
+ *        1. @ChannelHandler.Sharable: pipeline中的Handler是否可以重复加入，多个client同时访问时
+ *        2. @Skip 是否跳过执行方法
+ *        2. @UnstableApi: 标识不建议使用
+ *      业务场景优化:
+ *        CPU密集型: 运算
+ *        IO密集型: 等待
+ *            new Unordered
+ *      增强写数据的性能
+ *
+ *      优化应用限流:
+ *      全局限流和Channel级别限流
+ *      GlobalTrafficShapingHandler和ChannelTrafficShapinghandler: 每个都有2个参数，限制进和限制处
+ *      Global和Channel可以合并处理限流,GlobalChannelTrafficShapingHandler: 则包含了4个参数
+ *
+ *      优化使用native:为不同的平台开启native
+ *         加载开关、
+ *         环境加载路径、
+ *         创建临时文件，拷贝native包文件，加载执行后删除
+ *         问题: 版本不一致或加载执行权限受限 -> mount -o remount,exec /tmp
+ *
  */
 public class OrderServerProcessHandler extends SimpleChannelInboundHandler<RequestMessage> {
     @Override
@@ -35,7 +59,7 @@ public class OrderServerProcessHandler extends SimpleChannelInboundHandler<Reque
         OrderOperationResult orderOperationResult = operation.execute();
 
         ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.setMessageHandler(responseMessage.getMessageHandler());
+        responseMessage.setMessageHandler(requestMessage.getMessageHandler());
         responseMessage.setMessageBody(orderOperationResult);
 
         ctx.writeAndFlush(responseMessage);
